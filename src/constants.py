@@ -1,1 +1,5 @@
 NAME = "KingsGame"
+
+RUNNING = 0
+PAUSED = 1
+EXITED = 2

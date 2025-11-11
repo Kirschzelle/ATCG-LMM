@@ -1,5 +1,5 @@
 python -m venv env
 call env/scripts/activate.bat
 pip install -r requirements.txt
-python ./run.py
+python ./src/main.py
 pause
