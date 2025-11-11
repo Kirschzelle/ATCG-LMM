@@ -1,3 +1,4 @@
+from llm.council import get_council_response
 import arcade
 import constants as c
 
