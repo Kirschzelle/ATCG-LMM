@@ -1,6 +1,7 @@
 import arcade
 import constants as c
 import elements.text_box_bundler as tbb
+import core.chat_log as cl
 import core.user_input as input
 
 class Main(arcade.Window):
@@ -13,9 +14,9 @@ class Main(arcade.Window):
 
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
+        self.cl = cl.ChatLog()
 
     def update(self, delta_time):
-        
         if(self.game_state == c.RUNNING):
             self.tb_bundler.update(delta_time)
 
@@ -36,7 +37,7 @@ class Main(arcade.Window):
         if self.game_state == c.PAUSED and key == arcade.key.SPACE:
             self.game_state = c.RUNNING
         if self.game_state == c.RUNNING:
-            input.handle_user_input(key, modifiers, self.tb_bundler.tb_player)
+            input.handle_user_input(key, modifiers, self.tb_bundler.tb_player, self.cl)
 
     def get_scaling(self):
         return min(self.get_size()[0]/480,self.get_size()[1]/270)

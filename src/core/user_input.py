@@ -1,13 +1,16 @@
 import arcade
+import constants as c
 import elements.text_box as tb
 
-def handle_user_input(key, modifiers, player_tb : tb.TextBox):
+def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl):
     if key == arcade.key.BACKSPACE:
         player_tb.remove_one_instant()
 
     if key == arcade.key.ENTER:
-        message = player_tb.get_current_text
+        message = player_tb.get_current_text()
         player_tb.clear()
+        cl.add_message(c.PEASANT, c.COUNCIL, message)
+        # TODO: If the message is too long, only the visible part gets returned from get_current_text()
         # TODO: Handle player speaking events.
 
     input = _user_input_to_char(key, modifiers)
