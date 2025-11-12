@@ -49,8 +49,6 @@ def _user_input_to_char(key, modifiers=0):
     punctuation_map = {
         arcade.key.MINUS: '-',
         arcade.key.EQUAL: '=',
-        arcade.key.BRACKETLEFT: '[',
-        arcade.key.BRACKETRIGHT: ']',
         arcade.key.BACKSLASH: '\\',
         arcade.key.SEMICOLON: ';',
         arcade.key.APOSTROPHE: "'",
