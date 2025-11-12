@@ -1,17 +1,18 @@
 from elements import text_box as tb
 import arcade
+import constants as c
 
 class TextBoxBundler():
 
     def __init__(self) -> None:
-        self.tb_council = tb.TextBox(75,195,125,165,-9, line_spacing = 1.0)
-        self.tb_king = tb.TextBox(245,145,115,80,-15)
-        self.tb_world = tb.TextBox(412,111,150,115,-10)
-        self.tb_poebel = tb.TextBox(350,257,270,80,-7)
-        self.tb_player = tb.TextBox(175,35,330,25,0, font_name = "My Soul", prevent_overflow = False)
-        self.tb_council.set_text_instant("""Hello! This is [c:RED]red text[c:BLACK].
-Now switching to [f:Courier New]monospace font[f:Arial].
-Here's [c:BLUE][s:20]BIG BLUE TEXT[s:14][c:BLACK]!
+        self.tb_council = tb.TextBox(c.NATIVE_W*(75/480),c.NATIVE_H*(195/270),c.NATIVE_W*(125/480),c.NATIVE_H*(165/270),-9, line_spacing = 1.0)
+        self.tb_king = tb.TextBox(c.NATIVE_W*(245/480),c.NATIVE_H*(145/270),c.NATIVE_W*(115/480),c.NATIVE_H*(80/270),-15)
+        self.tb_world = tb.TextBox(c.NATIVE_W*(412/480),c.NATIVE_H*(111/270),c.NATIVE_W*(150/480),c.NATIVE_H*(115/270),-10)
+        self.tb_poebel = tb.TextBox(c.NATIVE_W*(350/480),c.NATIVE_H*(257/270),c.NATIVE_W*(270/480),c.NATIVE_H*(80/270),-7)
+        self.tb_player = tb.TextBox(c.NATIVE_W*(175/480),c.NATIVE_H*(35/270),c.NATIVE_W*(330/480),c.NATIVE_H*(25/270),0, font_name = "My Soul", prevent_overflow = False)
+        self.tb_council.set_text_instant("""[s:8]Hello! This is [c:RED]red text[c:BLACK].
+Now switching to [f:Courier New]monospace font[f:My Soul].
+Here's [c:BLUE][s:12]BIG BLUE TEXT[s:14][c:BLACK]!
 You can also use [c:255,0,255]RGB colors[c:BLACK].
 [c:GREEN]Green text with [s:18]different sizes[s:14]![c:BLACK]""")
 

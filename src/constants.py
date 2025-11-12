@@ -1,8 +1,12 @@
 NAME = "KingsGame"
+NATIVE_W = 480
+NATIVE_H = 270
 
 RUNNING = 0
 PAUSED = 1
 EXITED = 2
+
+BOARD_SWITCH_EVERY = 0.3
 
 KING = "King"
 COUNCIL = "Council"

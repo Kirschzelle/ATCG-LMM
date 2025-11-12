@@ -1,6 +1,8 @@
 import arcade
 import constants as c
 import elements.text_box_bundler as tbb
+import elements.board as board
+import elements.pause as pause
 import core.chat_log as cl
 import core.user_input as input
 
@@ -8,25 +10,36 @@ class Main(arcade.Window):
     def __init__(self):
         super().__init__(title = c.NAME, fullscreen = False)
         self.game_state = c.RUNNING
-        self.game_board = arcade.Sprite("assets/sprites/board.png", self.get_scaling(), self.get_size()[0]/2, self.get_size()[1]/2)
         self.background_color = arcade.csscolor.ANTIQUE_WHITE
         self._load_fonts()
 
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
         self.cl = cl.ChatLog()
+        self.board = board.Board()
+        self.pause = pause.Pause()
 
-    def update(self, delta_time):
+    def on_update(self, delta_time):
         if(self.game_state == c.RUNNING):
             self.tb_bundler.update(delta_time)
+            self.board.update(delta_time)
+        if(self.game_state == c.PAUSED):
+            self.pause.update(delta_time)
+        if(self.game_state == c.EXITED):
+            arcade.exit()
+            self.close()
 
     def on_draw(self):
-        self.clear()
+        if(self.game_state != c.EXITED):
+            self.clear()
+            scale = self.get_scaling()
 
         if(self.game_state == c.RUNNING):
-            scale = self.get_scaling()
             self.tb_bundler.draw(scale)
-            arcade.draw_sprite(self.game_board, pixelated = True)
+            self.board.draw(scale)
+
+        if(self.game_state == c.PAUSED):
+            self.pause.draw(scale)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
@@ -40,10 +53,12 @@ class Main(arcade.Window):
             input.handle_user_input(key, modifiers, self.tb_bundler.tb_player, self.cl)
 
     def get_scaling(self):
-        return min(self.get_size()[0]/480,self.get_size()[1]/270)
+        return min(self.get_size()[0]/c.NATIVE_W,self.get_size()[1]/c.NATIVE_H)
     
     def _load_fonts(self):
         arcade.load_font("assets/fonts/my_soul/MySoul-Regular.ttf")
+        arcade.load_font("assets/fonts/rubik_glitch/RubikGlitch-Regular.ttf")
+        arcade.load_font("assets/fonts/monoton/Monoton-Regular.ttf")
 
 def run():
     game = Main()

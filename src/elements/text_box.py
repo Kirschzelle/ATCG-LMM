@@ -37,6 +37,10 @@ class TextBox():
         self.current_text = ""
         self.char_progress = 0.0
         
+        self._text_cache = []
+        self._last_drawn_text = ""
+        self._last_scaling = None
+        
     def set_text(self, text):
         self.target_text = text
         if not self.target_text.startswith(self.current_text):
@@ -73,6 +77,8 @@ class TextBox():
     def clear(self):
         self.current_text = ""
         self.target_text = ""
+        self._text_cache.clear()
+        self._last_drawn_text = ""
 
     def set_position(self, x, y):
         self.x = x
@@ -136,119 +142,135 @@ class TextBox():
             arcade.draw_polygon_filled(rotated_corners, self.bg_color)
 
         if self.current_text:
-            available_width = self.width - 2 * self.padding
-            available_height = self.height - 2 * self.padding
-
-            segments = self._parse_format_codes(self.current_text)
-
-            lines = self._split_lines(segments, available_width)
-
-            line_heights = []
-            for line_segments in lines:
-                max_size_in_line = max((size for _, _, _, size in line_segments), default=self.font_size)
-                temp_text = arcade.Text("Ay", 0, 0, font_size=max_size_in_line, font_name=self.font_name)
-                line_heights.append(temp_text.content_height * self.line_spacing)
-
-            total_text_height = sum(line_heights)
-
-            lines_removed = 0
-            while total_text_height > available_height and lines:
-                lines.pop(0)
-                removed_height = line_heights.pop(0)
-                total_text_height -= removed_height
-                lines_removed += 1
-
-            if lines_removed > 0 and self.prevent_overflow:
-                stripped_text = self._strip_format_codes(self.current_text)
-                stripped_segments = [(stripped_text, self.text_color, self.font_name, self.font_size)]
-                all_lines_stripped = self._split_lines(stripped_segments, available_width)
-                
-                if len(all_lines_stripped) > lines_removed:
-                    lines_to_remove = []
-                    for line_segments in all_lines_stripped[:lines_removed]:
-                        line_text = ''.join(text for text, _, _, _ in line_segments)
-                        lines_to_remove.append(line_text)
-                    lines_to_remove_str = '\n'.join(lines_to_remove)
-                    
-                    clean_target = self._strip_format_codes(self.target_text)
-                    if clean_target.startswith(lines_to_remove_str):
-                        chars_to_remove = len(lines_to_remove_str) + lines_removed
-                        
-                        visible_count = 0
-                        char_index = 0
-                        while visible_count < chars_to_remove and char_index < len(self.target_text):
-                            if self.target_text[char_index] == '[':
-                                close_bracket = self.target_text.find(']', char_index)
-                                if close_bracket != -1:
-                                    char_index = close_bracket + 1
-                                    continue
-                            visible_count += 1
-                            char_index += 1
-                        
-                        self.target_text = self.target_text[char_index:].lstrip('\n')
-                    
-                    clean_current = self._strip_format_codes(self.current_text)
-                    if clean_current.startswith(lines_to_remove_str):
-                        chars_to_remove = len(lines_to_remove_str) + lines_removed
-                        
-                        visible_count = 0
-                        char_index = 0
-                        while visible_count < chars_to_remove and char_index < len(self.current_text):
-                            if self.current_text[char_index] == '[':
-                                close_bracket = self.current_text.find(']', char_index)
-                                if close_bracket != -1:
-                                    char_index = close_bracket + 1
-                                    continue
-                            visible_count += 1
-                            char_index += 1
-                        
-                        self.current_text = self.current_text[char_index:].lstrip('\n')
-                    
-            start_y = -self.height/2 + self.padding + total_text_height - (line_heights[0] if line_heights else 0)
-            start_x = -self.width/2 + self.padding
+            needs_rebuild = (
+                self.current_text != self._last_drawn_text or
+                scaling != self._last_scaling
+            )
             
-            angle_rad = math.radians(self.angle)
-            cos_a = math.cos(angle_rad)
-            sin_a = math.sin(angle_rad)
+            if needs_rebuild:
+                self._rebuild_text_cache(scaling)
+                self._last_drawn_text = self.current_text
+                self._last_scaling = scaling
+
+            for text_obj, x_offset, y_offset in self._text_cache:
+                angle_rad = math.radians(self.angle)
+                cos_a = math.cos(angle_rad)
+                sin_a = math.sin(angle_rad)
+                
+                rotated_x = x_offset * cos_a - y_offset * sin_a
+                rotated_y = x_offset * sin_a + y_offset * cos_a
+                
+                text_obj.x = screen_x + rotated_x
+                text_obj.y = screen_y + rotated_y
+                text_obj.rotation = -self.angle
+                
+                text_obj.draw()
+
+    def _rebuild_text_cache(self, scaling):
+        self._text_cache.clear()
+        
+        available_width = self.width - 2 * self.padding
+        available_height = self.height - 2 * self.padding
+
+        segments = self._parse_format_codes(self.current_text)
+        lines = self._split_lines(segments, available_width)
+
+        line_heights = []
+        for line_segments in lines:
+            max_size_in_line = max((size for _, _, _, size in line_segments), default=self.font_size)
+            temp_text = arcade.Text("Ay", 0, 0, font_size=max_size_in_line, font_name=self.font_name)
+            line_heights.append(temp_text.content_height * self.line_spacing)
+
+        total_text_height = sum(line_heights)
+
+        lines_removed = 0
+        while total_text_height > available_height and lines:
+            lines.pop(0)
+            removed_height = line_heights.pop(0)
+            total_text_height -= removed_height
+            lines_removed += 1
+
+        if lines_removed > 0 and self.prevent_overflow:
+            stripped_text = self._strip_format_codes(self.current_text)
+            stripped_segments = [(stripped_text, self.text_color, self.font_name, self.font_size)]
+            all_lines_stripped = self._split_lines(stripped_segments, available_width)
             
-            current_y_offset = 0
-            for _, (line_segments, line_height) in enumerate(zip(lines, line_heights)):
-                local_x = start_x
-                local_y = start_y - current_y_offset
+            if len(all_lines_stripped) > lines_removed:
+                lines_to_remove = []
+                for line_segments in all_lines_stripped[:lines_removed]:
+                    line_text = ''.join(text for text, _, _, _ in line_segments)
+                    lines_to_remove.append(line_text)
+                lines_to_remove_str = '\n'.join(lines_to_remove)
                 
-                local_x *= scaling
-                local_y *= scaling
-                
-                rotated_x = local_x * cos_a - local_y * sin_a
-                rotated_y = local_x * sin_a + local_y * cos_a
-                
-                current_x_offset = 0
-                
-                for text_seg, color, font, size in line_segments:
-                    segment_local_x = current_x_offset * cos_a
-                    segment_local_y = -current_x_offset * sin_a
+                clean_target = self._strip_format_codes(self.target_text)
+                if clean_target.startswith(lines_to_remove_str):
+                    chars_to_remove = len(lines_to_remove_str) + lines_removed
                     
-                    final_x = screen_x + rotated_x + segment_local_x
-                    final_y = screen_y + rotated_y - segment_local_y
+                    visible_count = 0
+                    char_index = 0
+                    while visible_count < chars_to_remove and char_index < len(self.target_text):
+                        if self.target_text[char_index] == '[':
+                            close_bracket = self.target_text.find(']', char_index)
+                            if close_bracket != -1:
+                                char_index = close_bracket + 1
+                                continue
+                        visible_count += 1
+                        char_index += 1
                     
-                    scaled_size = int(size * scaling)
-                    
-                    arcade.draw_text(
-                        text_seg,
-                        final_x,
-                        final_y,
-                        color,
-                        scaled_size,
-                        anchor_x="left",
-                        anchor_y="bottom",
-                        font_name=font,
-                        rotation=-self.angle
-                    )
-                    
-                    segment_width = self._get_text_width(text_seg, size, font)
-                    current_x_offset += segment_width * scaling
+                    self.target_text = self.target_text[char_index:].lstrip('\n')
                 
-                current_y_offset += line_height
+                clean_current = self._strip_format_codes(self.current_text)
+                if clean_current.startswith(lines_to_remove_str):
+                    chars_to_remove = len(lines_to_remove_str) + lines_removed
+                    
+                    visible_count = 0
+                    char_index = 0
+                    while visible_count < chars_to_remove and char_index < len(self.current_text):
+                        if self.current_text[char_index] == '[':
+                            close_bracket = self.current_text.find(']', char_index)
+                            if close_bracket != -1:
+                                char_index = close_bracket + 1
+                                continue
+                        visible_count += 1
+                        char_index += 1
+                    
+                    self.current_text = self.current_text[char_index:].lstrip('\n')
+                
+        start_y = -self.height/2 + self.padding + total_text_height - (line_heights[0] if line_heights else 0)
+        start_x = -self.width/2 + self.padding
+        
+        current_y_offset = 0
+        for _, (line_segments, line_height) in enumerate(zip(lines, line_heights)):
+            local_x = start_x
+            local_y = start_y - current_y_offset
+            
+            local_x *= scaling
+            local_y *= scaling
+            
+            current_x_offset = 0
+            
+            for text_seg, color, font, size in line_segments:
+                segment_local_x = current_x_offset
+                
+                scaled_size = int(size * scaling)
+                
+                text_obj = arcade.Text(
+                    text_seg,
+                    0,
+                    0,
+                    color,
+                    scaled_size,
+                    anchor_x="left",
+                    anchor_y="bottom",
+                    font_name=font
+                )
+                
+                self._text_cache.append((text_obj, local_x + segment_local_x, local_y))
+                
+                segment_width = self._get_text_width(text_seg, size, font)
+                current_x_offset += segment_width * scaling
+            
+            current_y_offset += line_height
 
     def _split_lines(self, segments, max_width):
         lines = []
@@ -322,8 +344,8 @@ class TextBox():
         if not text:
             return 0
         
-        # Note: We are creating a new object each time. This might not be the best 
-        # for performance, but it was judged negligible in the game's scope.
+        # Creating temporary Text object for measurement
+        # This is acceptable for width calculations done less frequently
         temp_text = arcade.Text(
             text,
             0,
