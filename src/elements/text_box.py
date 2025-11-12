@@ -16,6 +16,7 @@ class TextBox():
                  text_color = arcade.color.BLACK,
                  bg_color = arcade.color.TRANSPARENT_BLACK,
                  write_speed = 20,
+                 line_spacing = 1.0,
                  prevent_overflow = True):
         
         self.x = x
@@ -29,6 +30,7 @@ class TextBox():
         self.text_color = text_color
         self.bg_color = bg_color
         self.write_speed = write_speed
+        self.line_spacing = line_spacing
         self.prevent_overflow = prevent_overflow
 
         self.target_text = ""
@@ -145,7 +147,7 @@ class TextBox():
             for line_segments in lines:
                 max_size_in_line = max((size for _, _, _, size in line_segments), default=self.font_size)
                 temp_text = arcade.Text("Ay", 0, 0, font_size=max_size_in_line, font_name=self.font_name)
-                line_heights.append(temp_text.content_height)
+                line_heights.append(temp_text.content_height * self.line_spacing)
 
             total_text_height = sum(line_heights)
 
@@ -223,8 +225,11 @@ class TextBox():
                 current_x_offset = 0
                 
                 for text_seg, color, font, size in line_segments:
-                    final_x = screen_x + rotated_x + current_x_offset
-                    final_y = screen_y + rotated_y
+                    segment_local_x = current_x_offset * cos_a
+                    segment_local_y = -current_x_offset * sin_a
+                    
+                    final_x = screen_x + rotated_x + segment_local_x
+                    final_y = screen_y + rotated_y - segment_local_y
                     
                     scaled_size = int(size * scaling)
                     
