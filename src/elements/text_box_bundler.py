@@ -8,7 +8,7 @@ class TextBoxBundler():
         self.tb_king = tb.TextBox(245,145,115,80,-15)
         self.tb_world = tb.TextBox(412,111,150,115,-10)
         self.tb_poebel = tb.TextBox(350,257,270,80,-7)
-        self.tb_player = tb.TextBox(175,35,330,25,0)
+        self.tb_player = tb.TextBox(175,35,330,25,0, font_name="My Soul")
 
     def draw(self, scale):
         self.tb_council.draw(scale)
