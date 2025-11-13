@@ -8,29 +8,25 @@ kb_sounds = [
     for i in range(1, 16)
 ]
 
-def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl, llm):
+def handle_user_input(key, modifiers, tbb, cl):
     if key == arcade.key.BACKSPACE:
-        player_tb.remove_one_instant()
+        tbb.tb_player.remove_one_instant()
         play_keyboard()
         return
 
     if key == arcade.key.ENTER:
-        message = player_tb.get_current_text()
-        player_tb.clear()
-        cl.add_message(c.PEASANT, c.COUNCIL, message) # TODO: CHANGE THIS
-        llm.get_response("Whats the color of the sky?", on_llm_finish) # TODO: CHANGE THIS
-        # TODO: Handle player speaking events.
+        message = tbb.tb_player.get_current_text()
+        tbb.tb_player.clear()
+        cl.add_message(c.PLAYER, message)
+        tbb.add_message(c.PLAYER, message)
         play_keyboard()
         return
 
     input = _user_input_to_char(key, modifiers)
 
     if input is not None:
-        player_tb.append_text_instant(input)
+        tbb.tb_player.append_text_instant(input)
         play_keyboard()
-
-def on_llm_finish(text): # TODO: CHANGE THIS
-    print(text) # TODO: CHANGE THIS
 
 def _user_input_to_char(key, modifiers=0):
     if arcade.key.A <= key <= arcade.key.Z:

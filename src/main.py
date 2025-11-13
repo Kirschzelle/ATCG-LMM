@@ -4,7 +4,6 @@ import elements.text_box_bundler as tbb
 import elements.board as board
 import elements.pause as pause
 import core.chat_log as cl
-import llm.llm as llm
 import core.user_input as input
 import os
 from huggingface_hub import hf_hub_download
@@ -16,7 +15,7 @@ MODEL_PATH = os.path.join("models", MODEL_FILE)
 
 class Main(arcade.Window):
     def __init__(self):
-        super().__init__(title = c.NAME, fullscreen = False)
+        super().__init__(title = c.NAME, fullscreen = False, width=(int)(3840*0.75),height=(int)(2160*0.75))
         self.game_state = c.RUNNING
         self.background_color = arcade.csscolor.ANTIQUE_WHITE
         self._load_fonts()
@@ -24,10 +23,9 @@ class Main(arcade.Window):
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
         self.cl = cl.ChatLog()
-        self.llm = llm.LLM()
         self.board = board.Board()
         self.pause = pause.Pause()
-        self.world = eventy.World()
+        self.world = eventy.World(self.tb_bundler)
 
     def on_update(self, delta_time):
         if(self.game_state == c.RUNNING):
@@ -61,7 +59,7 @@ class Main(arcade.Window):
         if self.game_state == c.PAUSED and key == arcade.key.SPACE:
             self.game_state = c.RUNNING
         if self.game_state == c.RUNNING:
-            input.handle_user_input(key, modifiers, self.tb_bundler.tb_player, self.cl, self.llm)
+            input.handle_user_input(key, modifiers, self.tb_bundler, self.cl)
 
     def get_scaling(self):
         return min(self.get_size()[0]/c.NATIVE_W,self.get_size()[1]/c.NATIVE_H)

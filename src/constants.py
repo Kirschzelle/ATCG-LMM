@@ -8,6 +8,8 @@ EXITED = 2
 
 BOARD_SWITCH_EVERY = 0.3
 
-KING = "King"
-COUNCIL = "Council"
-PEASANT = "Peasant"
+KING = "Sfigato"
+GREEDY_BASTARD = "Avido"
+PLAYER = "Aptal"
+
+MESSAGE_CD = 2.0

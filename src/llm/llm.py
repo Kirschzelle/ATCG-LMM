@@ -7,7 +7,8 @@ class LLM():
         self.lmm = Llama(
             model_path=get_model(),
             n_gpu_layers=-1,
-            n_ctx=2048
+            n_ctx=131072,
+            verbose=False
             )
         
     def get_response(self, prompt, on_finish=None):
@@ -19,7 +20,7 @@ class LLM():
                 top_p=0.9,
                 repeat_penalty=1.1
             )
-            text = result["choices"][0]["text"].strip()
+            text = result["choices"][0]["text"].strip() # type: ignore
             if on_finish:
                 on_finish(text)
 
