@@ -1,22 +1,32 @@
 import arcade
 import constants as c
 import elements.text_box as tb
+import random
+
+kb_sounds = [
+    arcade.load_sound(f"assets/audio/kdeyboard_typing/{i:02}.wav")
+    for i in range(1, 16)
+]
 
 def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl):
     if key == arcade.key.BACKSPACE:
         player_tb.remove_one_instant()
+        play_keyboard()
+        return
 
     if key == arcade.key.ENTER:
         message = player_tb.get_current_text()
         player_tb.clear()
         cl.add_message(c.PEASANT, c.COUNCIL, message)
-        # TODO: If the message is too long, only the visible part gets returned from get_current_text()
         # TODO: Handle player speaking events.
+        play_keyboard()
+        return
 
     input = _user_input_to_char(key, modifiers)
 
     if input is not None:
         player_tb.append_text_instant(input)
+        play_keyboard()
 
 def _user_input_to_char(key, modifiers=0):
     if arcade.key.A <= key <= arcade.key.Z:
@@ -98,3 +108,7 @@ def _user_input_to_char(key, modifiers=0):
         pass
     
     return None
+
+def play_keyboard():
+    index = random.randint(0, len(kb_sounds)-1)
+    arcade.play_sound(kb_sounds[index])
