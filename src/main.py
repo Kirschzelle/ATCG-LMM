@@ -6,6 +6,7 @@ import elements.pause as pause
 import core.chat_log as cl
 import core.user_input as input
 import os
+from huggingface_hub import hf_hub_download
 
 MODEL_REPO = "bartowski/Llama-3.2-3B-Instruct-GGUF"
 MODEL_FILE = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
