@@ -12,11 +12,24 @@ class Knowledge():
                 )
         ]
 
-    def get_persons(self, name = None, is_council_member = False, is_king = False):
-        
+    def get_persons(self, name=None, is_council_member=None, is_king=None):
+            results = []
+            for person in self.persons:
+                if name is not None and person.name != name:
+                    continue
+                if is_council_member is not None and person.councelor != is_council_member:
+                    continue
+                if is_king is not None and person.king != is_king:
+                    continue
+                
+                results.append(person)
+            
+            return results
 
 class Person():
     def __init__(self, name, system_message, opinion = 0, councelor = False, king = False):
         self.opinion = opinion
         self.name = name
         self.system_message = system_message
+        self.councelor = councelor
+        self.king = king

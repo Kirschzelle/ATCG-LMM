@@ -12,9 +12,6 @@ class ChatLog():
             self.peasant_cl.append((sender, message))
         else:
             raise ValueError(f"Unknown log: {log}")
-        
-        print(f"Council log: {self.council_cl}")
-        print(f"Peasant log: {self.peasant_cl}")
 
     def clear_chat_log(self, log = "all"):
         if log == c.COUNCIL:

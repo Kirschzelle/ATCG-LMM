@@ -7,6 +7,7 @@ import core.chat_log as cl
 import core.user_input as input
 import os
 from huggingface_hub import hf_hub_download
+import llm.eventy as eventy
 
 MODEL_REPO = "bartowski/Llama-3.2-3B-Instruct-GGUF"
 MODEL_FILE = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
@@ -24,11 +25,13 @@ class Main(arcade.Window):
         self.cl = cl.ChatLog()
         self.board = board.Board()
         self.pause = pause.Pause()
+        self.world = eventy.World()
 
     def on_update(self, delta_time):
         if(self.game_state == c.RUNNING):
             self.tb_bundler.update(delta_time)
             self.board.update(delta_time)
+            self.world.update(delta_time)
         if(self.game_state == c.PAUSED):
             self.pause.update(delta_time)
         if(self.game_state == c.EXITED):
