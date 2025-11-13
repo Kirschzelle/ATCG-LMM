@@ -5,6 +5,7 @@ __pycache__/
 
 # Own
 *.gguf
+*.DS_Store
 
 # C extensions
 *.so
