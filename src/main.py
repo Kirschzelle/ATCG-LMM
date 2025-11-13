@@ -5,6 +5,11 @@ import elements.board as board
 import elements.pause as pause
 import core.chat_log as cl
 import core.user_input as input
+import os
+
+MODEL_REPO = "bartowski/Llama-3.2-3B-Instruct-GGUF"
+MODEL_FILE = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+MODEL_PATH = os.path.join("models", MODEL_FILE)
 
 class Main(arcade.Window):
     def __init__(self):
@@ -12,6 +17,7 @@ class Main(arcade.Window):
         self.game_state = c.RUNNING
         self.background_color = arcade.csscolor.ANTIQUE_WHITE
         self._load_fonts()
+        self.model = get_model()
 
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
@@ -64,6 +70,23 @@ def run():
     game = Main()
     game.setup()
     arcade.run()
+
+def get_model():
+    if not os.path.exists(MODEL_PATH):
+        print(f"Model not found. Downloading {MODEL_FILE}...")
+        os.makedirs("models", exist_ok=True)
+        
+        downloaded_path = hf_hub_download(
+            repo_id=MODEL_REPO,
+            filename=MODEL_FILE,
+            local_dir="models",
+            local_dir_use_symlinks=False
+        )
+        print(f"Model downloaded to: {downloaded_path}")
+    else:
+        print(f"Model already exists at: {MODEL_PATH}")
+    
+    return MODEL_PATH
 
 if __name__ == "__main__":
     run()
