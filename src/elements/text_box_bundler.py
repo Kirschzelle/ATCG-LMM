@@ -33,8 +33,8 @@ class TextBoxBundler():
     def add_message(self, sender, message):
         print(f"legal message: {sender} : {message}")
         if sender == c.PLAYER:
-            self.tb_council.append_text(f"[c:AFRICAN_VIOLET][f:My Soul]{sender}: {message}")
+            self.tb_council.append_text(f"\n[c:AFRICAN_VIOLET][f:My Soul]{sender}: {message}")
         elif sender == c.KING:
-            self.tb_king.append_text(f"[c:GOLD][f:My Soul]{sender}: {message}")
+            self.tb_king.append_text(f"\n[c:GOLD][f:My Soul]{sender}: {message}")
         elif sender == c.GREEDY_BASTARD:
-            self.tb_council.append_text(f"[c:OCEAN_BOAT_BLUE][f:Arial]{sender}: {message}")
+            self.tb_council.append_text(f"\n[c:OCEAN_BOAT_BLUE][f:Arial]{sender}: {message}")
