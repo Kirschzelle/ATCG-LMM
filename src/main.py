@@ -18,7 +18,6 @@ class Main(arcade.Window):
         self.game_state = c.RUNNING
         self.background_color = arcade.csscolor.ANTIQUE_WHITE
         self._load_fonts()
-        self.model = get_model()
 
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
@@ -68,6 +67,7 @@ class Main(arcade.Window):
         arcade.load_font("assets/fonts/monoton/Monoton-Regular.ttf")
 
 def run():
+    get_model()
     game = Main()
     game.setup()
     arcade.run()
@@ -80,8 +80,7 @@ def get_model():
         downloaded_path = hf_hub_download(
             repo_id=MODEL_REPO,
             filename=MODEL_FILE,
-            local_dir="models",
-            local_dir_use_symlinks=False
+            local_dir="models"
         )
         print(f"Model downloaded to: {downloaded_path}")
     else:
