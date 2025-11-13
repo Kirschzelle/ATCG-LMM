@@ -4,7 +4,7 @@ import elements.text_box as tb
 import random
 
 kb_sounds = [
-    arcade.load_sound(f"assets/audio/kdeyboard_typing/{i:02}.wav")
+    arcade.load_sound(f"assets/audio/keyboard_typing/{i:02}.wav")
     for i in range(1, 16)
 ]
 
