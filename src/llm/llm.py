@@ -1,3 +1,4 @@
+import threading
 from llama_cpp import Llama
 from main import get_model
 
@@ -9,11 +10,18 @@ class LLM():
             n_ctx=2048
             )
         
-    def get_response(self, prompt):
-        return self.lmm(
-            prompt,
-            max_tokens=200,
-            temperature=0.7,
-            top_p=0.9,
-            repeat_penalty=1.1
+    def get_response(self, prompt, on_finish=None):
+        def worker():
+            result = self.lmm(
+                prompt,
+                max_tokens=200,
+                temperature=0.7,
+                top_p=0.9,
+                repeat_penalty=1.1
             )
+            text = result["choices"][0]["text"].strip()
+            if on_finish:
+                on_finish(text)
+
+        thread = threading.Thread(target=worker, daemon=True)
+        thread.start()

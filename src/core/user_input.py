@@ -2,13 +2,13 @@ import arcade
 import constants as c
 import elements.text_box as tb
 import random
-
+response_text = ""
 kb_sounds = [
     arcade.load_sound(f"assets/audio/keyboard_typing/{i:02}.wav")
     for i in range(1, 16)
 ]
 
-def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl):
+def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl, llm):
     if key == arcade.key.BACKSPACE:
         player_tb.remove_one_instant()
         play_keyboard()
@@ -17,7 +17,8 @@ def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl):
     if key == arcade.key.ENTER:
         message = player_tb.get_current_text()
         player_tb.clear()
-        cl.add_message(c.PEASANT, c.COUNCIL, message)
+        cl.add_message(c.PEASANT, c.COUNCIL, message) # TODO: CHANGE THIS
+        llm.get_response("Whats the color of the sky?", on_llm_finish) # TODO: CHANGE THIS
         # TODO: Handle player speaking events.
         play_keyboard()
         return
@@ -27,6 +28,9 @@ def handle_user_input(key, modifiers, player_tb : tb.TextBox, cl):
     if input is not None:
         player_tb.append_text_instant(input)
         play_keyboard()
+
+def on_llm_finish(text): # TODO: CHANGE THIS
+    print(text) # TODO: CHANGE THIS
 
 def _user_input_to_char(key, modifiers=0):
     if arcade.key.A <= key <= arcade.key.Z:

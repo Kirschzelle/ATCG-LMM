@@ -4,6 +4,7 @@ import elements.text_box_bundler as tbb
 import elements.board as board
 import elements.pause as pause
 import core.chat_log as cl
+import llm.llm as llm
 import core.user_input as input
 import os
 from huggingface_hub import hf_hub_download
@@ -23,6 +24,7 @@ class Main(arcade.Window):
     def setup(self):
         self.tb_bundler = tbb.TextBoxBundler()
         self.cl = cl.ChatLog()
+        self.llm = llm.LLM()
         self.board = board.Board()
         self.pause = pause.Pause()
         self.world = eventy.World()
@@ -59,7 +61,7 @@ class Main(arcade.Window):
         if self.game_state == c.PAUSED and key == arcade.key.SPACE:
             self.game_state = c.RUNNING
         if self.game_state == c.RUNNING:
-            input.handle_user_input(key, modifiers, self.tb_bundler.tb_player, self.cl)
+            input.handle_user_input(key, modifiers, self.tb_bundler.tb_player, self.cl, self.llm)
 
     def get_scaling(self):
         return min(self.get_size()[0]/c.NATIVE_W,self.get_size()[1]/c.NATIVE_H)

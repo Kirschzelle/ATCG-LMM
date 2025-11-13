@@ -1,5 +1,3 @@
-
-
 def get_council_response(message):
     system_message = """You are Bob, the adviser for King Charly, who rules over the Emperion.
     Give clear, wise, and respectful advice to the king."""
