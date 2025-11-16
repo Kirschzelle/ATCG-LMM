@@ -16,7 +16,7 @@ MODEL_PATH = os.path.join("models", MODEL_FILE)
 
 class Main(arcade.Window):
     def __init__(self):
-        super().__init__(title = c.NAME, fullscreen = False, width=(int)(3840*0.75),height=(int)(2160*0.75))
+        super().__init__(title = c.NAME, fullscreen = False, width=(int)(1920*0.75),height=(int)(1080*0.75))
         self.game_state = c.RUNNING
         self.background_color = arcade.csscolor.ANTIQUE_WHITE
         self._load_fonts()
