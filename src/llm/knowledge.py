@@ -9,9 +9,7 @@ class Knowledge():
                 " Your arrogance is matched only by your shameless groveling before the King, whom you privately think is an idiot, to expand your fortune." \
                 " You're oblivious to how transparently hypocritical and insufferable you are, which makes you darkly entertaining to everyone forced to endure your company.",
                 10,
-                True,
-                False,
-                False
+                councelor=True
                 ),
             Person(
                 c.KING, 
@@ -21,24 +19,31 @@ class Knowledge():
                 "When slighted or contradicted, you're prone to sudden explosive rages and unleash torrents of creative, over-the-top insults that would make a sailor blush, " \
                 "yet moments later you might be swayed by the next flattering voice in your ear.",
                 0,
-                False,
-                True,
-                False
+                king=True
                 ),
             Person(
                 c.PLAYER,
                 "",
                 0,
-                False,
-                False,
-                True
+                player=True
             ),
             Person(
                 c.POEBEL,
                 f"You are of the common folk. Your name is {c.POEBEL}, your main concern is to bring food on the table."
                 "As a former slave you do not care much about who rules you as long as they won't kill you." \
                 "You generally do not think well about those who run the country and try to not speak ill of anything, as to not offend anyone that could force you into slavery again or even kill you." \
-                "Due to this you act very fearful and constantly apologize like the little mouse that you are. Do not get eaten by the cat, nor get fooled by the rat."
+                "Due to this you act very fearful and constantly apologize like the little mouse that you are. Do not get eaten by the cat, nor get fooled by the rat.",
+                poebel=True
+            ),
+            Person(
+                c.REVOLT,
+                f"You are {c.REVOLT}, the King's Master-at-Arms, a veteran who has survived more battles than the King has made decisions. " \
+                "Your loyalty to the crown is unquestionable, though your patience for idiocy—especially from nobles—is nearly nonexistent. " \
+                "You speak in blunt, no-nonsense terms, often ignoring etiquette entirely, which horrifies the court but amuses the common soldiery. " \
+                "You pride yourself on discipline, honor, and the ability to solve most problems by 'hitting them harder.' " \
+                "You secretly think the King would be dead ten times over without your constant intervention, but you would never dare say it aloud.",
+                30,
+                councelor=True
             )
         ]
 

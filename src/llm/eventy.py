@@ -52,6 +52,15 @@ class World:
                 self._on_success_player_beheading,
                 self._on_failure_player_beheading,
                 self
+            ),
+            Eventy(
+                c.REVOLT,
+                self._always_true,
+                "Your Majesty, the neighboring kingdom has rallied its armies. All signs point toward war. How shall we respond?",
+                f"Should the King prepare for the war?",
+                self._on_success_war,
+                self._on_failure_war,
+                self
             )
         ]
         self.knowledge = knw.Knowledge()
@@ -86,6 +95,16 @@ class World:
 
     def _on_failure_player_beheading(self):
         self.game_over()
+
+    def _on_success_war(self):
+        for person in self.knowledge.get_persons(is_king=True):
+            person.opinion += 50
+
+        for person in self.knowledge.get_persons(is_council_member=True):
+            person.opinion += 50
+
+    def _on_failure_war(self):
+        self.game_over()    
 
     ### Actual class
 

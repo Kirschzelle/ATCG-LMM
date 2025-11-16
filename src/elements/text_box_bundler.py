@@ -35,3 +35,5 @@ class TextBoxBundler():
             self.tb_council.append_text(f"\n[c:OCEAN_BOAT_BLUE][f:Arial]{sender}: {message}")
         elif sender == c.POEBEL:
             self.tb_poebel.append_text(f"\n[c:BITTER_LEMON][f:Monoton]{sender}: {message}")
+        elif sender == c.REVOLT:
+            self.tb_council.append_text(f"\n[c:CRIMSON][f:Arial]{sender}: {message}")

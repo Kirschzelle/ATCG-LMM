@@ -13,5 +13,6 @@ KING = "Sfigato"
 GREEDY_BASTARD = "Avido"
 PLAYER = "Aptal"
 POEBEL = "Sklakat"
+REVOLT = "Revolt"
 
 MESSAGE_CD = 2.0
