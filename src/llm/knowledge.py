@@ -32,10 +32,17 @@ class Knowledge():
                 False,
                 False,
                 True
+            ),
+            Person(
+                c.POEBEL,
+                f"You are of the common folk. Your name is {c.POEBEL}, your main concern is to bring food on the table."
+                "As a former slave you do not care much about who rules you as long as they won't kill you." \
+                "You generally do not think well about those who run the country and try to not speak ill of anything, as to not offend anyone that could force you into slavery again or even kill you." \
+                "Due to this you act very fearful and constantly apologize like the little mouse that you are. Do not get eaten by the cat, nor get fooled by the rat."
             )
         ]
 
-    def get_persons(self, name=None, is_council_member=None, is_king=None, is_player=None):
+    def get_persons(self, name=None, is_council_member=None, is_king=None, is_player=None, is_poebel=None):
             results = []
             for person in self.persons:
                 if name is not None and person.name != name:
@@ -46,16 +53,19 @@ class Knowledge():
                     continue
                 if is_player is not None and person.player != is_player:
                     continue
+                if is_poebel is not None and person.poebel != is_poebel:
+                    continue
                 
                 results.append(person)
             
             return results
 
 class Person():
-    def __init__(self, name, system_message, opinion = 0, councelor = False, king = False, player = False):
+    def __init__(self, name, system_message, opinion = 0, councelor = False, king = False, player = False, poebel = False):
         self.opinion = opinion
         self.name = name
         self.system_message = system_message
         self.councelor = councelor
         self.king = king
         self.player = player
+        self.poebel = poebel

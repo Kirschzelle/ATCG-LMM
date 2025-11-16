@@ -7,7 +7,7 @@ class LLM():
         self.lmm = Llama(
             model_path=get_model(),
             n_gpu_layers=-1,
-            n_ctx=131072,
+            n_ctx=4096*2,
             verbose=False
             )
         
@@ -22,6 +22,7 @@ class LLM():
             )
             text = result["choices"][0]["text"].strip() # type: ignore
             if on_finish:
+                print(f"[DEBUG] Finished LLM execution: {text}")
                 on_finish(text)
 
         thread = threading.Thread(target=worker, daemon=True)

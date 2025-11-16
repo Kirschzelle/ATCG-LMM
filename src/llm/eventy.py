@@ -37,11 +37,20 @@ class World:
         self.all_events = [
             Eventy(
                 c.KING,
-                self.always_true,
+                self._always_true,
                 "Hark, mine subjects! Should We not erect a statue of Our royal self for all the kingdom to behold?",
                 "Should a grand statue of the King be built?",
-                self.on_success,
-                self.on_failure,
+                self._on_success_statue,
+                self._on_failure_statue,
+                self
+            ),
+            Eventy(
+                c.KING,
+                self._always_true,
+                f"Heed the, I am bored. How about we behead {c.PLAYER} for our our personal enjoyment?",
+                f"Should the advisor {c.PLAYER} be killed?",
+                self._on_success_player_beheading,
+                self._on_failure_player_beheading,
                 self
             )
         ]
@@ -53,17 +62,30 @@ class World:
         self.message_pending = False
         self.limit = 5
         self.tbb = tb_bundler
+        self.failed = False
 
     ### Event functions
 
-    def always_true(self):
+    def _always_true(self):
         return True
     
-    def on_success(self):
-        print("We do!")
+    def _on_success_statue(self):
+        for person in self.knowledge.get_persons(is_poebel=True):
+            person.opinion *= 1.25
 
-    def on_failure(self):
-        print("Oh no!")
+        for person in self.knowledge.get_persons(is_king=True):
+            person.opinion += 5
+
+    def _on_failure_statue(self):
+        for person in self.knowledge.get_persons(is_king=True):
+            person.opinion -= 15
+
+    def _on_success_player_beheading(self):
+        for person in self.knowledge.get_persons(is_king=True):
+            person.opinion += 5
+
+    def _on_failure_player_beheading(self):
+        self.game_over()
 
     ### Actual class
 
@@ -80,7 +102,7 @@ class World:
         return None
     
     def game_over(self):
-        print("game over!") # TODO: Implement game over.
+        self.failed = True
     
     def update(self, delta_time):
         if self.current_event == None:
@@ -132,14 +154,20 @@ class World:
 
     def decision_finished(self, text):
         sender, accepted, reasoning = parse_king_verdict(text)
+        if accepted == None:
+            self.prompt_decision()
+            return
         if accepted:
             self.current_event.effects_success() # type: ignore
         else:
             self.current_event.effects_failure() # type: ignore
         self.tbb.add_message(sender, reasoning)
+        self.all_events.remove(self.current_event)
+        self.current_event = None
+        self.message_pending = False
 
     def check_legal_response(self, sender, message) -> bool:
-        if len(self.knowledge.get_persons(name=sender)) == 1 and message is not None and message is not "":
+        if len(self.knowledge.get_persons(name=sender)) == 1 and message is not None and message != "":
             return True
         return False
 

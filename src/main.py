@@ -3,14 +3,15 @@ import constants as c
 import elements.text_box_bundler as tbb
 import elements.board as board
 import elements.pause as pause
+import elements.game_over as go
 import core.chat_log as cl
 import core.user_input as input
 import os
 from huggingface_hub import hf_hub_download
 import llm.eventy as eventy
 
-MODEL_REPO = "bartowski/Llama-3.2-3B-Instruct-GGUF"
-MODEL_FILE = "Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+MODEL_REPO = "bartowski/Llama-3.2-1B-Instruct-GGUF"
+MODEL_FILE = "Llama-3.2-1B-Instruct-Q4_K_M.gguf"
 MODEL_PATH = os.path.join("models", MODEL_FILE)
 
 class Main(arcade.Window):
@@ -26,15 +27,21 @@ class Main(arcade.Window):
         self.board = board.Board()
         self.pause = pause.Pause()
         self.world = eventy.World(self.tb_bundler)
+        self.game_over = go.GameOver()
 
     def on_update(self, delta_time):
-        if(self.game_state == c.RUNNING):
+        if(self.world.failed == True and self.game_state != c.EXITED):
+            self.game_state = c.GAME_OVER
+
+        if(self.game_state == c.GAME_OVER):
+            self.game_over.update(delta_time)
+        elif(self.game_state == c.RUNNING):
             self.tb_bundler.update(delta_time)
             self.board.update(delta_time)
             self.world.update(delta_time)
-        if(self.game_state == c.PAUSED):
+        elif(self.game_state == c.PAUSED):
             self.pause.update(delta_time)
-        if(self.game_state == c.EXITED):
+        elif(self.game_state == c.EXITED):
             arcade.exit()
             self.close()
 
@@ -44,11 +51,12 @@ class Main(arcade.Window):
             scale = self.get_scaling()
 
         if(self.game_state == c.RUNNING):
-            self.tb_bundler.draw(scale)
             self.board.draw(scale)
-
+            self.tb_bundler.draw(scale)
         if(self.game_state == c.PAUSED):
             self.pause.draw(scale)
+        if(self.game_state == c.GAME_OVER):
+            self.game_over.draw(scale)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
@@ -60,6 +68,12 @@ class Main(arcade.Window):
             self.game_state = c.RUNNING
         if self.game_state == c.RUNNING:
             input.handle_user_input(key, modifiers, self.tb_bundler, self.cl)
+        if self.game_state == c.GAME_OVER:
+            if key == arcade.key.ESCAPE:
+                self.game_state =c.EXITED
+            elif key == arcade.key.SPACE:
+                self.game_state = c.RUNNING
+                self.setup()
 
     def get_scaling(self):
         return min(self.get_size()[0]/c.NATIVE_W,self.get_size()[1]/c.NATIVE_H)

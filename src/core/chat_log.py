@@ -24,12 +24,12 @@ class ChatLog():
               f'What to include: ONLY the words {person.name} speaks out loud\n'\
               f'What to EXCLUDE: descriptions, actions, thoughts, narration, context\n'\
               f'Length: 10-15 words maximum\n\n'\
+              f'Repetition: Do not repeat anything already said!\n\n'\
               f'WRONG: {person.name}: *smirks* "I disagree" *crosses arms*\n'\
               f'WRONG: {person.name}: "I disagree with this proposal for many reasons..."\n'\
               f'CORRECT: {person.name}: "I disagree."\n'\
-              f'CORRECT: {person.name}: "This is foolish."\n\n'\
-              f'Now respond as {person.name}:'
-        
+              f'CORRECT: {person.name}: "This is foolish."\n\n'
+                
         return prompt
     
     def get_king_verdict(self, king : knw.Person, proposal):
@@ -56,7 +56,6 @@ class ChatLog():
             f'WRONG: {king.name}: "After careful consideration, I have decided to ACCEPT this proposal because..."\n'\
             f'CORRECT: {king.name}: "ACCEPT - The treasury requires replenishment."\n'\
             f'CORRECT: {king.name}: "REJECT - This burdens the people too greatly."\n\n'\
-            f'Now give your verdict as {king.name}:'
         
         return prompt
     
